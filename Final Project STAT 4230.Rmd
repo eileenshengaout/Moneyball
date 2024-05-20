@@ -1,0 +1,602 @@
+---
+title: "Final Project STAT 4230"
+author: "James MacPherson"
+date: "2024-04-28"
+output: word_document
+---
+
+Final Project
+STAT 4230
+
+Heather Cranford
+Eileen Shengaout
+James MacPherson
+
+-------------------------------------------------------------------------------------
+Download Data:
+```{r}
+Baseball=read.csv("baseball.csv")
+Baseball=Baseball[,c("Team","League","Year","RS","RA","W","OBP","SLG","BA","Playoffs","G")]
+Baseball
+```
+
+```{r}
+Baseball_Quantitative=Baseball[,c("RS","RA","W","OBP","SLG","BA","G")]
+```
+
+Data Dictionary:
+"Team": Team Name
+"League": League (American League (0) or National League (1))
+"Year": Year of Season
+"RS": Runs Scored in Total over course of season
+"RA": Runs Allowed in Total over course of season
+"W": Wins in Season
+"OBP": On Base Percentage (Times the batters got on base / Total at Bats)
+"SLG": Slugging Percentage (Number of Bases Reached / Total At Bats)
+"BA": Batting Average (Hits / Total Number of At Bats)
+"Playoffs": Made Playoffs (1) or Missed Playoffs (0)
+"G": Total Games in Season
+
+Goal: Predict the amount of Games Won (W) using vairables in Data.
+
+
+Interactions Between Variables:
+```{r}
+pairs(Baseball_Quantitative)
+```
+
+There are some terms that show a linear trend, but this is somewhat expected. In baseball, a team that obtains a higher volume of wins would have "good stats" in many different categories. Every variable shows somewhat of a linear trend when compared to "W" (Wins in a season). When looking at multicollinearity, we will need to take which response variables are highly correlated.
+
+-------------------------------------------------------------------------------------
+Simple Linear Regression: (W~One Variable)
+
+1) Wins~RS
+```{r}
+RS_Model=lm(W~RS,data=Baseball)
+summary(RS_Model)
+```
+Linearity...
+```{r}
+plot(W~RS,data=Baseball) & abline(RS_Model,col="red")
+```
+Explanation: There is a positive linear trend between these two variables.
+
+Constant Variance...
+
+Breusch-Pagan Test:
+$H_{0}$: Residuals have constant variance.
+$H_{a}$: Residuals do not have constant variance.
+```{r}
+library(car)
+ncvTest(RS_Model)
+```
+Explanation: Fail to reject, P-Value = 0.29804
+
+Normality...
+
+Shapiro-Wilkes:
+$H_{0}$: Residuals are normally distributed.
+$H_{a}$: Residuals are not normally distributed.
+```{r}
+shapiro.test(RS_Model$residuals)
+```
+Explanation: Reject null, P-Value = 0.0004844
+
+Independence...
+
+Durbin-Watson Test:
+$H_{0}:$The residuals are independent.
+$H_{a}:$The residuals are not independent.
+```{r}
+durbinWatsonTest(RS_Model)
+```
+Explanation: Reject null, P-Value = 0.028
+
+
+2) Wins~RA
+```{r}
+RA_Model=lm(W~RA,data=Baseball)
+summary(RA_Model)
+```
+
+Linearity...
+```{r}
+plot(W~RA,data=Baseball) & abline(RA_Model,col="red")
+```
+Explanation: There is a negative linear trend between these two variables.
+
+Constant Variance...
+
+Breusch-Pagan Test:
+$H_{0}$: Residuals have constant variance.
+$H_{a}$: Residuals do not have constant variance.
+```{r}
+library(car)
+ncvTest(RA_Model)
+```
+Explanation: Fail to reject, P-Value = 0.14377
+
+Normality...
+
+Shapiro-Wilkes:
+$H_{0}$: Residuals are normally distributed.
+$H_{a}$: Residuals are not normally distributed.
+```{r}
+shapiro.test(RA_Model$residuals)
+```
+Explanation: Fail to reject null, P-Value = 0.05323
+
+Independence...
+
+Durbin-Watson Test:
+$H_{0}:$The residuals are independent.
+$H_{a}:$The residuals are not independent.
+```{r}
+durbinWatsonTest(RA_Model)
+```
+Explanation: Reject null, P-Value = 0.004
+
+
+3) Wins~OBP
+```{r}
+OBP_Model=lm(W~OBP,data=Baseball)
+summary(OBP_Model)
+```
+
+Linearity...
+```{r}
+plot(W~OBP,data=Baseball) & abline(OBP_Model,col="red")
+```
+Explanation: There is a positive linear trend between these two variables.
+
+Constant Variance...
+
+Breusch-Pagan Test:
+$H_{0}$: Residuals have constant variance.
+$H_{a}$: Residuals do not have constant variance.
+```{r}
+library(car)
+ncvTest(OBP_Model)
+```
+Explanation: Reject null, P-Value = 0.00081435
+
+Normality...
+
+Shapiro-Wilkes:
+$H_{0}$: Residuals are normally distributed.
+$H_{a}$: Residuals are not normally distributed.
+```{r}
+shapiro.test(OBP_Model$residuals)
+```
+Explanation: Reject null, P-Value = 0.01977
+
+Independence...
+
+Durbin-Watson Test:
+$H_{0}:$The residuals are independent.
+$H_{a}:$The residuals are not independent.
+```{r}
+durbinWatsonTest(OBP_Model)
+```
+Explanation: Fail to reject null, P-Value = 0.128
+
+
+4) Wins~SLG
+```{r}
+SLG_Model=lm(W~SLG,data=Baseball)
+summary(SLG_Model)
+```
+
+Linearity...
+```{r}
+plot(W~SLG,data=Baseball) & abline(SLG_Model,col="red")
+```
+Explanation: There is a positive linear trend between the two variables
+
+Constant Variance...
+
+Breusch-Pagan Test:
+$H_{0}$: Residuals have constant variance.
+$H_{a}$: Residuals do not have constant variance.
+```{r}
+library(car)
+ncvTest(SLG_Model)
+```
+Explanation: Fail to reject, P-Value = 0.15128
+
+Normality...
+
+Shapiro-Wilkes:
+$H_{0}$: Residuals are normally distributed.
+$H_{a}$: Residuals are not normally distributed.
+```{r}
+shapiro.test(SLG_Model$residuals)
+```
+Explanation: Reject null, P-Value = 0.001727
+
+Independence...
+
+Durbin-Watson Test:
+$H_{0}:$The residuals are independent.
+$H_{a}:$The residuals are not independent.
+```{r}
+durbinWatsonTest(SLG_Model)
+```
+Explanation: Fail to reject null, P-Value = 0.51
+
+
+5) Wins~BA
+```{r}
+BA_Model=lm(W~BA,data=Baseball)
+summary(BA_Model)
+```
+
+Linearity...
+```{r}
+plot(W~BA,data=Baseball) & abline(BA_Model,col="red")
+```
+Explanation: There is a positive linear trend between the two variables.
+
+Constant Variance...
+
+Breusch-Pagan Test:
+$H_{0}$: Residuals have constant variance.
+$H_{a}$: Residuals do not have constant variance.
+```{r}
+library(car)
+ncvTest(BA_Model)
+```
+Explanation: Reject null, P-Value = 0.01589
+
+Normality...
+
+Shapiro-Wilkes:
+$H_{0}$: Residuals are normally distributed.
+$H_{a}$: Residuals are not normally distributed.
+```{r}
+shapiro.test(BA_Model$residuals)
+```
+Explanation: Reject null, P-Value = 0.03399
+
+Independence...
+
+Durbin-Watson Test:
+$H_{0}:$The residuals are independent.
+$H_{a}:$The residuals are not independent.
+```{r}
+durbinWatsonTest(BA_Model)
+```
+Explanation: Fail to null, P-Value = 0.682
+
+
+
+Scatterplot Matrix of the data; the relationship between number of wins and each of the predictors.
+```{r}
+pairs(Baseball_Quantitative)
+```
+
+Calculation of the Correlation Coefficient: 
+```{r}
+cor(Baseball_Quantitative)
+```
+
+Multiple Linear Regression: (W~All Variables)
+```{r}
+All_Multiple_Model=lm(W~RS+RA+OBP+SLG+BA+as.factor(Playoffs)+G,data=Baseball)
+summary(All_Multiple_Model)
+```
+Predicted Wins = -19.463882 + 0.085187(RS) - 0.098456(RA) + 47.514358(OBP) + 18.141321(SLG) - 14.555571(BA) + 3.128132(Playoffs) + 0.557668(G)
+
+Interpretations for Slopes and Intercepts:
+
+Intercept: A team with 0 in every category of variables would be predicted to win -19.463882 games over the course of the season. This isn't very relevant to our data set because that would be impossible.
+Runs Scored: For every unit increase in runs scored, predicted wins is expected to increase by 0.085187, keeping all other variables the same.
+Runs Allowed: For every unit increase in runs allowed, predicted wins is expected to decrease by 0.098456, keeping all other variables the same.
+On Base Percentage: For every unit increase in on base percentage, predicted wins is expected to increase by 47.514358, keeping all other variables the same.
+Slugging: For every unit increase in slugging, predicted wins is expected to increase by 18.141321, keeping all other variables the same.
+Batting Average: For every unit increase in batting average, predicted wins is expected to decrease by 14.555571, keeping all other variables the same.
+Playoffs: If a team makes the playoffs (1), the predicted wins is expected to increase by 3.128132, keeping all other variables the same.
+Games: For every unit increase in games played, predicted wins is expected to increase by 0.557668, keeping all other variables the same.
+
+
+Typical Size of Residuals; interpretation.
+```{r}
+summary(All_Multiple_Model)
+```
+Using this model for predicting the number of wins using all of the predictors shown in the model will predict the number of wins with an average error of 3.831 (Residual Standard Error).
+
+Checking Assumptions for Mulitple Linear Regression:
+
+Linearity...
+```{r}
+plot(All_Multiple_Model, which=1)
+```
+There is a linear pattern surrounding h=0, therefore, the linearity condition is satisfied.
+
+Constant Variance...
+Breusch Pagan Test:
+$H_{0}$: Residuals have constant variance.
+$H_{a}$: Residuals do not have constant variance.
+```{r}
+ncvTest(All_Multiple_Model)
+```
+Explanation: Reject null, P-Value = 0.0077701
+
+Normality...
+Shapiro-Wilkes:
+$H_{0}$: Residuals are normally distributed.
+$H_{a}$: Residuals are not normally distributed.
+```{r}
+shapiro.test(All_Multiple_Model$residuals)
+```
+Explanation: Fail to reject null, P-Value = 0.9419
+
+Independence...
+Durbin-Watson Test:
+$H_{0}:$The residuals are independent.
+$H_{a}:$The residuals are not independent.
+```{r}
+durbinWatsonTest(All_Multiple_Model)
+```
+Explanation: Fail to reject, P-Value = 0.85
+
+In summary, three of the four assumptions have been satisfied for the multiple linear regression model including all of our predictors.
+
+Interpretation of R^2:
+```{r}
+summary(All_Multiple_Model)
+```
+R^2 = 0.8888
+Meaning that 88% of the variation in the number of wins is explained by this model using all 7 predictors. 
+
+
+Selection of Variables:
+
+Backwards Elimination with P-Value as Criteria:
+```{r}
+summary(All_Multiple_Model)
+```
+```{r}
+Backward_PValue_1=update(All_Multiple_Model, .~. - BA)
+summary(Backward_PValue_1)
+```
+```{r}
+Backward_PValue_2=update(Backward_PValue_1, .~. - SLG)
+summary(Backward_PValue_2)
+```
+```{r}
+Backward_PValue_Final=update(Backward_PValue_2, .~. - OBP)
+summary(Backward_PValue_Final)
+```
+All of the variables' P-Values are less than $\alpha=0.05$ meaning that the variables we should use based on Backwards Selection with P-Value as the criteria are RS, RA, Playoffs, and G. 
+
+
+Forward Selection with AIC as Criteria:
+```{r}
+Forward_AIC_1=lm(W~1,data=Baseball)
+
+Forward_AIC=step(
+  Forward_AIC_1, 
+  scope = W ~ RS + RA + OBP + SLG + BA + as.factor(Playoffs) + G, 
+  direction = "forward")
+
+summary(Forward_AIC)
+```
+```{r}
+Forward_AIC_Model=lm(W~as.factor(Playoffs)+RA+RS+G+OBP+SLG,data=Baseball)
+```
+Using AIC as the criteria in a Forward Selection Model, the variables we should use are Playoffs, RA, RS, G, OBP, SLG. 
+
+
+Selection by R-Squared Adjusted Criteria:
+```{r}
+all=regsubsets(W~.,data=Baseball,nvmax=7)
+summary(all)$adj
+```
+
+```{r}
+summary(all)$adj
+plot(summary(all)$adj ~ seq(7), type = "b", pch = 19, col = "blue") 
+```
+```{r}
+RSquaredAdjusted_Model=lm(W~RS+RA+OBP+SLG+BA+Playoffs+G,data=Baseball)
+```
+Since R-Squared Adjusted decreases when a predictor that is not useful is added to the model, based on this criteria, it recommends we use all of the predictors.
+
+
+Variable Selection using R-Squared Criteria:
+```{r}
+summary(all)$rsq
+plot(summary(all)$rsq ~ seq(7), type = "b", pch = 19, col = "blue") 
+```
+```{r}
+RSquare_Model=lm(W~RS+RA,data=Baseball)
+```
+
+According to R-Squared Criteria, the R-Square stops increasing drastically when there are two predictors in the Model. Knowing this, the predictors we should use based off of R-Squared Criteria are RS and RA. 
+
+-------------------------------------------------------------------------------------
+(5)
+Model with Interaction:
+
+Wins Predicted = $\beta_{0} + \beta_{1}x1 + \beta_{2}x2 + \beta_{3}x_1x_2 + \beta_{4}x_3 + ... + \beta_{8}x_7$, where $\beta_3$ is the interaction term between RS and RA. 
+
+First, we see if the overall model is useful with an interaction term.
+
+$H_{0}: \beta_{1} = \beta_{2} = \beta_{3} = \beta_{4} = \beta_{5} = \beta_{6} = \beta_{7} = \beta_{8} = 0$  (The overall model is not useful).
+$H_{A}:$ Atleast one $\beta_{i} \neq0$ (The overall model is useful).
+```{r}
+InteractionModel = lm(W ~ RS + RA + OBP + SLG + BA + as.factor(Playoffs) + G + (RA * RS), data = Baseball)
+summary(InteractionModel)
+```
+With p-value $< 2.2 * 10^{-16}$ being smaller than $\alpha = 0.05$, we have sufficient evidence to conclude that the overall model is useful in predicting the amount of games won. 
+
+Now, let's test the interaction term to see if it's useful.
+$H_{0}: \beta_{3} = 0$  (The interaction term between RS vs RA is useful).
+$H_{A}:$ Atleast one $\beta_{i} \neq0$ (The interaction term is not useful).
+```{r}
+summary(InteractionModel)
+```
+With p-value $0.07848$ being larger than $\alpha = 0.05$, we have sufficient evidence to conclude that the interaction term between RS and RA is not useful in predicting the amount of games won. 
+
+Quadratic Model: Since all of our quantitative variables have linear trends, we didn't find it appropriate to include quadratic terms. It wouldn't accurately represent the data. Because we aren't using quadratic terms within our model, there is no need to run Partial Nested F-tests.
+
+Interaction of Variables:
+
+Wins Versus Runs Scored
+```{r}
+plot(W~RS,data=Baseball)
+```
+
+Wins Versus Runs Allowed
+```{r}
+plot(W~RA,data=Baseball)
+```
+
+Wins Versus On Base Percentage
+```{r}
+plot(W~OBP,data=Baseball)
+```
+
+Wins Versus Slugging
+```{r}
+plot(W~SLG,data=Baseball)
+```
+
+Wins Versus Batting Average
+```{r}
+plot(W~BA,data=Baseball)
+```
+
+Choose Final Model and Evaluate Summary:
+
+2 Final Models are... (Because they had the highest R^2 values and therefore could account for the most variation in the data.)
+```{r}
+Forward_AIC_Model=lm(W~as.factor(Playoffs)+RA+RS+G+OBP+SLG,data=Baseball)
+RSquare_Model=lm(W~RS+RA,data=Baseball)
+```
+
+Multicolinearity:
+
+Model 1: Forward AIC
+```{r}
+vif(Forward_AIC_Model)
+```
+Take out RS because the VIF is greater than 10. (14.041150)
+```{r}
+vif(update(Forward_AIC_Model, .~. -RS))
+```
+Now all VIF values are less than 10. The final model will include Playoffs, RA, G, OBP, and SLG.
+
+Model 2: R-Square Model
+```{r}
+vif(RSquare_Model)
+```
+Both VIF values are less than 10.
+
+
+Checking for Outliers in Model 1:
+
+```{r}
+Baseball_AIC=Baseball[,c("Team","League","Year","RS","RA","W","OBP","SLG","BA","Playoffs","G")]
+head(Baseball_AIC)
+```
+
+```{r}
+summary(Forward_AIC_Model)
+```
+```{r}
+#Outlier = 3 * Residual Standard Error
+3*3.831
+```
+
+```{r}
+Baseball_AIC[,12] = abs(Forward_AIC_Model$residuals)
+names(Baseball_AIC)[12] = "AbsResiduals"
+Baseball[Baseball_AIC$AbsResiduals >= 11.493,]
+```
+Take these values out of the data.
+
+Using Cook's Distance to Find Highly Influential Points in Model 1:
+```{r}
+plot(Forward_AIC_Model, which = 4)
+```
+
+```{r}
+Baseball_AIC_Data=Baseball_AIC[-c(211,524,710,758,958,1147,1223),]
+```
+
+```{r}
+AIC_Model2=lm(W~as.factor(Playoffs)+RA+RS+G+OBP+SLG,data=Baseball_AIC_Data)
+summary(Forward_AIC_Model)
+summary(AIC_Model2)
+```
+Forward_AIC_Model R^2: 0.8888
+AIC_Model2 R^2: 0.8932
+
+Checking for Outliers in Model 2:
+```{r}
+Baseball_RS=Baseball[,c("Team","League","Year","RS","RA","W","OBP","SLG","BA","Playoffs","G")]
+head(Baseball_RS)
+```
+
+
+```{r}
+summary(RSquare_Model)
+```
+```{r}
+#Outlier = 3 * Residual Standard Error
+3*3.98
+```
+
+```{r}
+Baseball_RS[,12] = abs(RSquare_Model$residuals)
+names(Baseball_RS)[12] = "AbsResiduals"
+Baseball[Baseball_RS$AbsResiduals >= 11.94,]
+```
+Take out these rows in the data.
+
+Using Cook's Distance to Find Highly Influential Points in Model 1:
+```{r}
+plot(RSquare_Model, which = 4)
+```
+
+```{r}
+Baseball_RS_Data=Baseball_RS[-c(248,340,993,134,188,211,524,710,958),]
+```
+
+```{r}
+RS_Model2=lm(W~RS+RA,data=Baseball_RS_Data)
+summary(RSquare_Model)
+summary(RS_Model2)
+```
+RSQuare_Model R^2: 0.8796
+RS_Model R^2: 0.8862
+
+
+Predicting the 2013 MLB Season: We will use the AIC_Model2 to predict the amount of wins each MLB team had in the 2013 season to understand how well our model does at predicting data not used in training the model. 
+
+```{r}
+MLB2013Data=read.csv("2013MLB.csv")
+MLB2013Data
+```
+
+```{r}
+PredictedWins=predict(AIC_Model2,newdata=MLB2013Data)
+MLB2013Data$PredictedWins=PredictedWins
+MLB2013Data$Residuals=(MLB2013Data$W - MLB2013Data$PredictedWins)
+print(MLB2013Data[,c("Team","W","PredictedWins","Residuals")])
+```
+
+```{r}
+summary(abs(MLB2013Data$Residuals))
+```
+
+Our AIC_Model2 predicted the amount of Wins a mean residual value of 4.84109. The median value for the residuals was 2.32558. The highest resdi
+
+```{r}
+library(ggplot2)
+ggplot(MLB2013Data) + geom_histogram(aes(abs(x=MLB2013Data$Residuals)),bins=100) + ggtitle("MLB 2013 Season Wins: Residuals") + ylab("Count") + xlab("Residuals")
+```
+
+Our model had a mean absolute value residual of 4.84109 meaning that on average, our predicted number of games won for each team in the 2013 MLB season was off by an absolute value of almost 5. The median residual was 2.32558 meaning that we predicted 50% of the teams total wins by a margin of plus or minus 2.32558. In summary, our model did a very good job predicting the total number of wins a team will have over the course of a season. 
