@@ -6,9 +6,10 @@ Here is link to the dataset:
 https://www.kaggle.com/datasets/wduckett/moneyball-mlb-stats-19622012
 
 ### Markdown File & Code 
-Final Project STAT 4230.Rmd
+The file "Final Project STAT 4230.Rmd" contains the R code, where we ran simple regression and multiple regression models, tested assumptions (constant variance, independence, normally distributed, linearity), and selected variables to find a model that predicts the amount of games won the best. 
 
 ### Downloaded PDF File of Report 
+The file " " is our report of our findings. This report goes through the process of how we found our best model. 
 
 
 
